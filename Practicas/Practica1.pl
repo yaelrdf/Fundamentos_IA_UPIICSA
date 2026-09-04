@@ -53,6 +53,9 @@ feliz(X) :-
 
 % GOAL 5: Who is NOT happy?
 % ?- \+ feliz(X).
+% or
+% ?- (hombre(X) ; mujer(X)), \+ feliz(X).
+
 
 % GOAL 6: Who observes whom?
 % ?- observa(X, Y).
