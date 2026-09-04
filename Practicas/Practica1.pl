@@ -1,3 +1,25 @@
+%Quien ve a quien
+observa(yael,andrea).
+observa(misael, rodrigo).
+observa(mildred, fernando).
+observa(andrea, yael).
+observa(fernando, misael).
+observa(emiliano, mildred).
+
+
+% Generos
+hombre(yael).
+hombre(misael).
+hombre(fernando).
+hombre(emiliano).
+hombre(rodrigo).
+mujer(mildred).
+mujer(andrea).
+
+% Regla
+feliz(X) :- 
+    observa(X, Y),      
+    observa(Y, X).
 
 % ========================================
 % SECTION 2: RULES (Reglas)
