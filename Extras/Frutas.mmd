@@ -1,22 +1,6 @@
 flowchart TD
-    %% ==========================================
-    %% 1. ÁRBOL DE DECISIÓN (CLASIFICACIÓN)
-    %% ==========================================
-    subgraph DecisionTree ["1. Árbol de Decisión (Clasificación de Atributos)"]
-        direction TB
-        Start(["Objeto X a clasificar"]) --> D1{"1. ¿fruta(X)?"}
-        D1 -- "No" --> R1["No es manzana (Falso)"]
-        D1 -- "Sí" --> D2{"2. ¿forma(X, redonda)?"}
-        D2 -- "No" --> R2["No es manzana (Falso)"]
-        D2 -- "Sí" --> D3{"3. ¿color(X, verde)?"}
-        D3 -- "No" --> R3["No es manzana (Falso)"]
-        D3 -- "Sí" --> R4["Es manzana: manzana(X) = true"]
-    end
-
-    %% ==========================================
-    %% 2. ÁRBOL DE RAMIFICACIÓN Y RESOLUCIÓN SLD
-    %% ==========================================
-    subgraph SLDTree ["2. Árbol de Ramificación y Búsqueda (Inferencia Prolog & Backtracking)"]
+    %% ÁRBOL DE RAMIFICACIÓN Y RESOLUCIÓN SLD
+    subgraph SLDTree ["Árbol de Ramificación y Búsqueda (Inferencia Prolog & Backtracking)"]
         direction TB
         Root["<b>Meta Inicial:</b><br/>?- manzana(X)."] --> Regla["<b>Unificación con Regla:</b><br/>manzana(X) :- fruta(X), forma(X, redonda), color(X, verde).<br/><b>Metas pendientes:</b><br/>?- fruta(X), forma(X, redonda), color(X, verde)."]
         
@@ -43,18 +27,20 @@ flowchart TD
         B2_Fail --> EndFail["<b>ÁRBOL AGOTADO</b><br/>No hay más cláusulas de fruta(X)<br/>Resultado: false."]
     end
 
-    classDef rootNode fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#0D47A1;
-    classDef ruleNode fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92;
-    classDef choiceNode fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px,color:#F57F17;
-    classDef branch fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#004D40;
-    classDef eval fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
-    classDef failNode fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#B71C1C;
-    classDef successNode fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20;
+    style SLDTree fill:none
 
-    class Start,Root rootNode;
+    classDef rootNode fill:none,stroke:#1565C0,stroke-width:2px;
+    classDef ruleNode fill:none,stroke:#5E35B1,stroke-width:2px;
+    classDef choiceNode fill:none,stroke:#FBC02D,stroke-width:2px;
+    classDef branch fill:none,stroke:#00838F,stroke-width:2px;
+    classDef eval fill:none,stroke:#EF6C00,stroke-width:2px;
+    classDef failNode fill:none,stroke:#C62828,stroke-width:2px;
+    classDef successNode fill:none,stroke:#2E7D32,stroke-width:2px;
+
+    class Root rootNode;
     class Regla ruleNode;
-    class D1,D2,D3,Choice choiceNode;
+    class Choice choiceNode;
     class B1,B2 branch;
     class B1_Forma,B1_Color,B2_Forma,B2_Color eval;
-    class R1,R2,R3,B1_Fail,B2_Fail,EndFail failNode;
-    class R4,B2_Success successNode;
+    class B1_Fail,B2_Fail,EndFail failNode;
+    class B2_Success successNode;
