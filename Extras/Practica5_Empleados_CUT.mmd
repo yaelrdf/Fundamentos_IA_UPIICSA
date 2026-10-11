@@ -1,0 +1,60 @@
+flowchart TD
+    subgraph SLDTree ["Árbol de Ramificación y Búsqueda (SLD) - supervisa(X, Y) [CON CORTE !]"]
+        direction TB
+
+        %% Meta Inicial
+        Root["<b>Meta Inicial (Goal):</b><br/>?- supervisa(X, Y)."]
+
+        %% Punto de elección: 3 reglas
+        ChoiceReglas{"<b>Punto de Elección: Reglas de supervisa/2</b><br/>1. gerente(X), empleado(Y), !<br/>2. empleado(X), mecanografa(Y)<br/>3. gerente(X), mecanografa(Y)"}
+        Root --> ChoiceReglas
+
+        %% ==========================================
+        %% RAMA 1: Regla 1 (gerente(X), empleado(Y), !)
+        %% ==========================================
+        ChoiceReglas -->|"Regla 1"| R1["<b>Regla 1:</b><br/>?- gerente(X), empleado(Y), !."]
+        R1 --> ChoiceR1_G{"Buscar: gerente(X)"}
+
+        %% R1 - Jimenez
+        ChoiceR1_G -->|"X = jimenez"| R1_Jim["gerente(jimenez)<br/>?- empleado(Y), !."]
+        R1_Jim --> ChoiceR1_Jim_E{"Buscar: empleado(Y)"}
+        ChoiceR1_Jim_E -->|"Y = ortiz"| R1_Cut["empleado(ortiz)<br/>?- !."]
+        
+        %% Ejecución del CUT
+        R1_Cut -->|"Ejecuta instrucción CUT (!)"| S1(["<b>Solución Única:</b><br/>{X = jimenez, Y = ortiz}"])
+        
+        %% Poda de alternativas dentro de la Regla 1
+        ChoiceR1_Jim_E -.->|"PODA (CUT):<br/>Y = zavala"| Prune1["❌ Rama Eliminada:<br/>Alternativas de empleado(Y)"]
+        ChoiceR1_G -.->|"PODA (CUT):<br/>X = mejia"| Prune2["❌ Rama Eliminada:<br/>Alternativas de gerente(X)"]
+
+        %% ==========================================
+        %% RAMA 2: Regla 2 (Poda)
+        %% ==========================================
+        ChoiceReglas -.->|"PODA (CUT)"| R2["❌ Rama Eliminada:<br/><b>Regla 2:</b><br/>?- empleado(X), mecanografa(Y)."]
+
+        %% ==========================================
+        %% RAMA 3: Regla 3 (Poda)
+        %% ==========================================
+        ChoiceReglas -.->|"PODA (CUT)"| R3["❌ Rama Eliminada:<br/><b>Regla 3:</b><br/>?- gerente(X), mecanografa(Y)."]
+        
+        %% Efecto del Cut
+        S1 ==>|"Intento de Backtracking"| BacktrackFail["<b>EFECTO DEL CORTE (!)</b><br/>Bloquea el retroceso (backtracking).<br/>Termina la búsqueda."]
+    end
+
+    style SLDTree fill:none
+
+    classDef rootNode fill:none,stroke:#1565C0,stroke-width:2px;
+    classDef choiceNode fill:none,stroke:#FBC02D,stroke-width:2px;
+    classDef ruleNode fill:none,stroke:#5E35B1,stroke-width:2px;
+    classDef branch fill:none,stroke:#00838F,stroke-width:2px;
+    classDef successNode fill:none,stroke:#2E7D32,stroke-width:2px;
+    classDef pruneNode fill:none,stroke:#C62828,stroke-width:2px,stroke-dasharray: 5 5,color:#B71C1C;
+    classDef infoNode fill:none,stroke:#D84315,stroke-width:2px;
+
+    class Root rootNode;
+    class ChoiceReglas,ChoiceR1_G,ChoiceR1_Jim_E choiceNode;
+    class R1 ruleNode;
+    class R1_Jim,R1_Cut branch;
+    class S1 successNode;
+    class Prune1,Prune2,R2,R3 pruneNode;
+    class BacktrackFail infoNode;

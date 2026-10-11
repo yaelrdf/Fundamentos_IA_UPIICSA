@@ -1,0 +1,48 @@
+flowchart TD
+    subgraph CutTree ["Árbol de Resolución SLD - culpable(X,Y) [CON CORTE !]"]
+        direction TB
+
+        %% Meta Inicial
+        Root["<b>Meta Inicial (Goal):</b><br/>?- culpable(X, Y)."]
+        Root --> R_Culpable["<b>Regla culpable/2:</b><br/>?- condenado(X,Y), delito(Y)."]
+        
+        R_Culpable --> R_Condenado["<b>Regla condenado/2:</b><br/>?- intento(X,Y), demostrado(X,Y), !, delito(Y)."]
+        
+        R_Condenado --> ChoiceIntento{"<b>Punto de Elección:</b><br/>Buscar hechos para: intento(X,Y)"}
+
+        %% Alternativa 1: Calteron
+        ChoiceIntento -->|"1. X = calteron<br/>Y = traicion_a_la_patria"| B1["?- demostrado(calteron, traicion_a_la_patria),<br/>!, delito(traicion_a_la_patria)."]
+        B1 --> B1_Dem{"Evaluar:<br/>demostrado(calteron, traicion...)"}
+        B1_Dem -->|"FALLO (Fail)<br/>Hecho no existe"| B1_Fail["<b>FALLO</b>"]
+        B1_Fail ==>|"BACKTRACKING"| ChoiceIntento
+
+        %% Alternativa 2: Martinez
+        ChoiceIntento -->|"2. X = martinez<br/>Y = robo_a_mano_armada"| B2["?- demostrado(martinez, robo_a_mano_armada),<br/>!, delito(robo_a_mano_armada)."]
+        B2 --> B2_Dem{"Evaluar:<br/>demostrado(martinez, robo_a_mano_armada)"}
+        B2_Dem -->|"ÉXITO (Exit)"| B2_Cut["<b>EJECUCIÓN DEL CORTE (!)</b><br/>?- delito(robo_a_mano_armada)."]
+        
+        B2_Cut --> B2_Del{"Evaluar:<br/>delito(robo_a_mano_armada)"}
+        B2_Del -->|"ÉXITO (Exit)"| S1(["<b>Solución Única:</b><br/>{X = martinez, Y = robo_a_mano_armada}"])
+        
+        %% PODA DE RAMAS (Efecto del Cut)
+        ChoiceIntento -.->|"PODA (CUT)"| B3["❌ Rama Eliminada:<br/>Alternativa 3: X = rodriguez"]
+        ChoiceIntento -.->|"PODA (CUT)"| B4["❌ Rama Eliminada:<br/>Alternativa 4: X = sanchez"]
+        
+        S1 ==>|"Intento de Backtracking"| BacktrackFail["<b>EFECTO DEL CORTE (!)</b><br/>Bloquea el retroceso hacia intento/2 y demostrado/2.<br/>Termina la búsqueda."]
+    end
+
+    style CutTree fill:none
+
+    classDef rootNode fill:none,stroke:#1565C0,stroke-width:2px;
+    classDef choiceNode fill:none,stroke:#FBC02D,stroke-width:2px;
+    classDef branch fill:none,stroke:#00838F,stroke-width:2px;
+    classDef successNode fill:none,stroke:#2E7D32,stroke-width:2px;
+    classDef pruneNode fill:none,stroke:#C62828,stroke-width:2px,stroke-dasharray: 5 5,color:#B71C1C;
+    classDef infoNode fill:none,stroke:#D84315,stroke-width:2px;
+
+    class Root,R_Culpable,R_Condenado rootNode;
+    class ChoiceIntento,B1_Dem,B2_Dem,B2_Del choiceNode;
+    class B1,B2,B2_Cut branch;
+    class S1 successNode;
+    class B3,B4 pruneNode;
+    class BacktrackFail infoNode;

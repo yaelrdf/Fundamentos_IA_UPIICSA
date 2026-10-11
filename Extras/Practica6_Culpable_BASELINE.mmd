@@ -1,0 +1,52 @@
+flowchart TD
+    subgraph BaselineTree ["Árbol de Resolución SLD - culpable(X,Y) [SIN CORTE]"]
+        direction TB
+
+        %% Meta Inicial
+        Root["<b>Meta Inicial (Goal):</b><br/>?- culpable(X, Y)."]
+        Root --> R_Culpable["<b>Regla culpable/2:</b><br/>?- condenado(X,Y), delito(Y)."]
+        
+        R_Culpable --> R_Condenado["<b>Regla condenado/2:</b><br/>?- intento(X,Y), demostrado(X,Y), delito(Y)."]
+        
+        R_Condenado --> ChoiceIntento{"<b>Punto de Elección:</b><br/>Buscar hechos para: intento(X,Y)"}
+
+        %% Alternativa 1: Calteron
+        ChoiceIntento -->|"1. X = calteron<br/>Y = traicion_a_la_patria"| B1["?- demostrado(calteron, traicion_a_la_patria),<br/>delito(traicion_a_la_patria)."]
+        B1 --> B1_Dem{"Evaluar:<br/>demostrado(calteron, traicion...)"}
+        B1_Dem -->|"FALLO (Fail)<br/>Hecho no existe"| B1_Fail["<b>FALLO</b>"]
+        B1_Fail ==>|"BACKTRACKING"| ChoiceIntento
+
+        %% Alternativa 2: Martinez
+        ChoiceIntento -->|"2. X = martinez<br/>Y = robo_a_mano_armada"| B2["?- demostrado(martinez, robo_a_mano_armada),<br/>delito(robo_a_mano_armada)."]
+        B2 --> B2_Dem{"Evaluar:<br/>demostrado(martinez, robo_a_mano_armada)"}
+        B2_Dem -->|"ÉXITO (Exit)"| B2_Del{"Evaluar:<br/>delito(robo_a_mano_armada)"}
+        B2_Del -->|"ÉXITO (Exit)"| S1(["<b>Solución 1:</b><br/>{X = martinez, Y = robo_a_mano_armada}"])
+        S1 ==>|"BACKTRACKING"| ChoiceIntento
+
+        %% Alternativa 3: Rodriguez
+        ChoiceIntento -->|"3. X = rodriguez<br/>Y = asesinato"| B3["?- demostrado(rodriguez, asesinato),<br/>delito(asesinato)."]
+        B3 --> B3_Dem{"Evaluar:<br/>demostrado(rodriguez, asesinato)"}
+        B3_Dem -->|"ÉXITO (Exit)"| B3_Del{"Evaluar:<br/>delito(asesinato)"}
+        B3_Del -->|"ÉXITO (Exit)"| S2(["<b>Solución 2:</b><br/>{X = rodriguez, Y = asesinato}"])
+        S2 ==>|"BACKTRACKING"| ChoiceIntento
+
+        %% Alternativa 4: Sanchez
+        ChoiceIntento -->|"4. X = sanchez<br/>Y = incendio_premeditado"| B4["?- demostrado(sanchez, incendio_premeditado),<br/>delito(incendio_premeditado)."]
+        B4 --> B4_Dem{"Evaluar:<br/>demostrado(sanchez, incendio...)"}
+        B4_Dem -->|"ÉXITO (Exit)"| B4_Del{"Evaluar:<br/>delito(incendio_premeditado)"}
+        B4_Del -->|"ÉXITO (Exit)"| S3(["<b>Solución 3:</b><br/>{X = sanchez, Y = incendio_premeditado}"])
+        S3 ==>|"Búsqueda Agotada"| Fin["Resultado: 3 soluciones encontradas."]
+
+    end
+
+    style BaselineTree fill:none
+
+    classDef rootNode fill:none,stroke:#1565C0,stroke-width:2px;
+    classDef choiceNode fill:none,stroke:#FBC02D,stroke-width:2px;
+    classDef branch fill:none,stroke:#00838F,stroke-width:2px;
+    classDef successNode fill:none,stroke:#2E7D32,stroke-width:2px;
+
+    class Root,R_Culpable,R_Condenado rootNode;
+    class ChoiceIntento,B1_Dem,B2_Dem,B2_Del,B3_Dem,B3_Del,B4_Dem,B4_Del choiceNode;
+    class B1,B2,B3,B4 branch;
+    class S1,S2,S3 successNode;

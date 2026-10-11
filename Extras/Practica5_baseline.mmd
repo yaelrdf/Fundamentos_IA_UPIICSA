@@ -1,0 +1,75 @@
+flowchart TD
+    subgraph SLDTree ["Árbol de Ramificación y Búsqueda (SLD) - supervisa(X, Y) [Sin Corte]"]
+        direction TB
+
+        %% Meta Inicial
+        Root["<b>Meta Inicial (Goal):</b><br/>?- supervisa(X, Y)."]
+
+        %% Punto de elección: 3 reglas
+        ChoiceReglas{"<b>Punto de Elección: Reglas de supervisa/2</b><br/>1. gerente(X), empleado(Y)<br/>2. empleado(X), mecanografa(Y)<br/>3. gerente(X), mecanografa(Y)"}
+        Root --> ChoiceReglas
+
+        %% ==========================================
+        %% RAMA 1: Regla 1 (gerente(X), empleado(Y))
+        %% ==========================================
+        ChoiceReglas -->|"Regla 1"| R1["<b>Regla 1:</b><br/>?- gerente(X), empleado(Y)."]
+        R1 --> ChoiceR1_G{"Buscar: gerente(X)"}
+
+        %% R1 - Jimenez
+        ChoiceR1_G -->|"X = jimenez"| R1_Jim["gerente(jimenez)<br/>?- empleado(Y)."]
+        R1_Jim --> ChoiceR1_Jim_E{"Buscar: empleado(Y)"}
+        ChoiceR1_Jim_E -->|"Y = ortiz"| S1(["<b>Solución 1:</b><br/>{X = jimenez, Y = ortiz}"])
+        ChoiceR1_Jim_E -->|"Y = zavala"| S2(["<b>Solución 2:</b><br/>{X = jimenez, Y = zavala}"])
+
+        %% R1 - Mejia
+        ChoiceR1_G -->|"X = mejia"| R1_Mej["gerente(mejia)<br/>?- empleado(Y)."]
+        R1_Mej --> ChoiceR1_Mej_E{"Buscar: empleado(Y)"}
+        ChoiceR1_Mej_E -->|"Y = ortiz"| S3(["<b>Solución 3:</b><br/>{X = mejia, Y = ortiz}"])
+        ChoiceR1_Mej_E -->|"Y = zavala"| S4(["<b>Solución 4:</b><br/>{X = mejia, Y = zavala}"])
+
+        %% ==========================================
+        %% RAMA 2: Regla 2 (empleado(X), mecanografa(Y))
+        %% ==========================================
+        ChoiceReglas -->|"Regla 2 (Backtracking)"| R2["<b>Regla 2:</b><br/>?- empleado(X), mecanografa(Y)."]
+        R2 --> ChoiceR2_E{"Buscar: empleado(X)"}
+
+        %% R2 - Ortiz
+        ChoiceR2_E -->|"X = ortiz"| R2_Ort["empleado(ortiz)<br/>?- mecanografa(Y)."]
+        R2_Ort --> ChoiceR2_Ort_M{"Buscar: mecanografa(Y)"}
+        ChoiceR2_Ort_M -->|"Y = ramos"| S5(["<b>Solución 5:</b><br/>{X = ortiz, Y = ramos}"])
+
+        %% R2 - Zavala
+        ChoiceR2_E -->|"X = zavala"| R2_Zav["empleado(zavala)<br/>?- mecanografa(Y)."]
+        R2_Zav --> ChoiceR2_Zav_M{"Buscar: mecanografa(Y)"}
+        ChoiceR2_Zav_M -->|"Y = ramos"| S6(["<b>Solución 6:</b><br/>{X = zavala, Y = ramos}"])
+
+        %% ==========================================
+        %% RAMA 3: Regla 3 (gerente(X), mecanografa(Y))
+        %% ==========================================
+        ChoiceReglas -->|"Regla 3 (Backtracking)"| R3["<b>Regla 3:</b><br/>?- gerente(X), mecanografa(Y)."]
+        R3 --> ChoiceR3_G{"Buscar: gerente(X)"}
+
+        %% R3 - Jimenez
+        ChoiceR3_G -->|"X = jimenez"| R3_Jim["gerente(jimenez)<br/>?- mecanografa(Y)."]
+        R3_Jim --> ChoiceR3_Jim_M{"Buscar: mecanografa(Y)"}
+        ChoiceR3_Jim_M -->|"Y = ramos"| S7(["<b>Solución 7:</b><br/>{X = jimenez, Y = ramos}"])
+
+        %% R3 - Mejia
+        ChoiceR3_G -->|"X = mejia"| R3_Mej["gerente(mejia)<br/>?- mecanografa(Y)."]
+        R3_Mej --> ChoiceR3_Mej_M{"Buscar: mecanografa(Y)"}
+        ChoiceR3_Mej_M -->|"Y = ramos"| S8(["<b>Solución 8:</b><br/>{X = mejia, Y = ramos}"])
+    end
+
+    style SLDTree fill:none
+
+    classDef rootNode fill:none,stroke:#1565C0,stroke-width:2px;
+    classDef choiceNode fill:none,stroke:#FBC02D,stroke-width:2px;
+    classDef ruleNode fill:none,stroke:#5E35B1,stroke-width:2px;
+    classDef branch fill:none,stroke:#00838F,stroke-width:2px;
+    classDef successNode fill:none,stroke:#2E7D32,stroke-width:2px;
+
+    class Root rootNode;
+    class ChoiceReglas,ChoiceR1_G,ChoiceR1_Jim_E,ChoiceR1_Mej_E,ChoiceR2_E,ChoiceR2_Ort_M,ChoiceR2_Zav_M,ChoiceR3_G,ChoiceR3_Jim_M,ChoiceR3_Mej_M choiceNode;
+    class R1,R2,R3 ruleNode;
+    class R1_Jim,R1_Mej,R2_Ort,R2_Zav,R3_Jim,R3_Mej branch;
+    class S1,S2,S3,S4,S5,S6,S7,S8 successNode;
