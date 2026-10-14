@@ -1,0 +1,75 @@
+flowchart TD
+    subgraph SLD_Baseline_AB ["Derivación y Búsqueda SLD - supervisa(X, Y) [Sin Corte]"]
+        direction TB
+
+        %% Objetivo Raíz
+        Root["<b>Consulta Principal:</b><br/>?- supervisa(X, Y)."]
+
+        %% Selección de Reglas
+        ChoiceReglas["<b>Punto de Selección: Reglas de supervisa/2</b><br/>(1) gerente(X), empleado(Y)<br/>(2) empleado(X), mecanografa(Y)<br/>(3) gerente(X), mecanografa(Y)"]
+        Root --> ChoiceReglas
+
+        %% ==========================================
+        %% RAMA 1: Regla 1
+        %% ==========================================
+        ChoiceReglas -->|"1ra Cláusula"| R1["<b>Regla 1:</b><br/>?- gerente(X), empleado(Y)."]
+        R1 --> ChoiceR1_G["Unificar: gerente(X)"]
+
+        %% R1 - Jimenez
+        ChoiceR1_G -->|"X = jimenez"| R1_Jim["gerente(jimenez)<br/>Objetivo pendiente: ?- empleado(Y)."]
+        R1_Jim --> ChoiceR1_Jim_E["Unificar: empleado(Y)"]
+        ChoiceR1_Jim_E -->|"Y = ortiz"| S1["<b>Éxito 1:</b><br/>{X = jimenez, Y = ortiz}"]
+        ChoiceR1_Jim_E -->|"Y = zavala"| S2["<b>Éxito 2:</b><br/>{X = jimenez, Y = zavala}"]
+
+        %% R1 - Mejia
+        ChoiceR1_G -->|"X = mejia"| R1_Mej["gerente(mejia)<br/>Objetivo pendiente: ?- empleado(Y)."]
+        R1_Mej --> ChoiceR1_Mej_E["Unificar: empleado(Y)"]
+        ChoiceR1_Mej_E -->|"Y = ortiz"| S3["<b>Éxito 3:</b><br/>{X = mejia, Y = ortiz}"]
+        ChoiceR1_Mej_E -->|"Y = zavala"| S4["<b>Éxito 4:</b><br/>{X = mejia, Y = zavala}"]
+
+        %% ==========================================
+        %% RAMA 2: Regla 2
+        %% ==========================================
+        ChoiceReglas -->|"2da Cláusula (Retroceso)"| R2["<b>Regla 2:</b><br/>?- empleado(X), mecanografa(Y)."]
+        R2 --> ChoiceR2_E["Unificar: empleado(X)"]
+
+        %% R2 - Ortiz
+        ChoiceR2_E -->|"X = ortiz"| R2_Ort["empleado(ortiz)<br/>Objetivo pendiente: ?- mecanografa(Y)."]
+        R2_Ort --> ChoiceR2_Ort_M["Unificar: mecanografa(Y)"]
+        ChoiceR2_Ort_M -->|"Y = ramos"| S5["<b>Éxito 5:</b><br/>{X = ortiz, Y = ramos}"]
+
+        %% R2 - Zavala
+        ChoiceR2_E -->|"X = zavala"| R2_Zav["empleado(zavala)<br/>Objetivo pendiente: ?- mecanografa(Y)."]
+        R2_Zav --> ChoiceR2_Zav_M["Unificar: mecanografa(Y)"]
+        ChoiceR2_Zav_M -->|"Y = ramos"| S6["<b>Éxito 6:</b><br/>{X = zavala, Y = ramos}"]
+
+        %% ==========================================
+        %% RAMA 3: Regla 3
+        %% ==========================================
+        ChoiceReglas -->|"3ra Cláusula (Retroceso)"| R3["<b>Regla 3:</b><br/>?- gerente(X), mecanografa(Y)."]
+        R3 --> ChoiceR3_G["Unificar: gerente(X)"]
+
+        %% R3 - Jimenez
+        ChoiceR3_G -->|"X = jimenez"| R3_Jim["gerente(jimenez)<br/>Objetivo pendiente: ?- mecanografa(Y)."]
+        R3_Jim --> ChoiceR3_Jim_M["Unificar: mecanografa(Y)"]
+        ChoiceR3_Jim_M -->|"Y = ramos"| S7["<b>Éxito 7:</b><br/>{X = jimenez, Y = ramos}"]
+
+        %% R3 - Mejia
+        ChoiceR3_G -->|"X = mejia"| R3_Mej["gerente(mejia)<br/>Objetivo pendiente: ?- mecanografa(Y)."]
+        R3_Mej --> ChoiceR3_Mej_M["Unificar: mecanografa(Y)"]
+        ChoiceR3_Mej_M -->|"Y = ramos"| S8["<b>Éxito 8:</b><br/>{X = mejia, Y = ramos}"]
+    end
+
+    style SLD_Baseline_AB fill:none
+
+    classDef rootNode fill:none,stroke:#6A1B9A,stroke-width:2.5px;
+    classDef choiceNode fill:none,stroke:#E65100,stroke-width:2px;
+    classDef ruleNode fill:none,stroke:#0277BD,stroke-width:2px;
+    classDef branch fill:none,stroke:#455A64,stroke-width:2px;
+    classDef successNode fill:none,stroke:#00897B,stroke-width:2.5px;
+
+    class Root rootNode;
+    class ChoiceReglas,ChoiceR1_G,ChoiceR1_Jim_E,ChoiceR1_Mej_E,ChoiceR2_E,ChoiceR2_Ort_M,ChoiceR2_Zav_M,ChoiceR3_G,ChoiceR3_Jim_M,ChoiceR3_Mej_M choiceNode;
+    class R1,R2,R3 ruleNode;
+    class R1_Jim,R1_Mej,R2_Ort,R2_Zav,R3_Jim,R3_Mej branch;
+    class S1,S2,S3,S4,S5,S6,S7,S8 successNode;

@@ -1,0 +1,56 @@
+flowchart TD
+    subgraph Baseline_Culpable_AB ["Árbol de Inferencia SLD - culpable(X, Y) [Sin Corte / Búsqueda Completa]"]
+        direction TB
+
+        %% Meta Inicial
+        Root["<b>Consulta de Culpabilidad:</b><br/>?- culpable(Individuo, Delito)."]
+        Root --> R_Culpable["<b>Expansión Cláusula culpable/2:</b><br/>?- condenado(X, Y), delito(Y)."]
+        
+        R_Culpable --> R_Condenado["<b>Expansión Cláusula condenado/2:</b><br/>?- intento(X, Y), demostrado(X, Y), delito(Y)."]
+        
+        R_Condenado --> ChoiceIntento["<b>Punto de Búsqueda:</b><br/>Explorar hechos de: intento(X, Y)"]
+
+        %% Alternativa 1: Calteron
+        ChoiceIntento -->|"(1) X = calteron<br/>Y = traicion_a_la_patria"| B1["Metas restantes:<br/>?- demostrado(calteron, traicion_a_la_patria),<br/>delito(traicion_a_la_patria)."]
+        B1 --> B1_Dem["Comprobar:<br/>demostrado(calteron, traicion...)"]
+        B1_Dem -->|"FALLO: No registrado"| B1_Fail["❌ NO DEMOSTRADO"]
+        B1_Fail ==>|"Retroceso (Backtracking)"| ChoiceIntento
+
+        %% Alternativa 2: Martinez
+        ChoiceIntento -->|"(2) X = martinez<br/>Y = robo_a_mano_armada"| B2["Metas restantes:<br/>?- demostrado(martinez, robo_a_mano_armada),<br/>delito(robo_a_mano_armada)."]
+        B2 --> B2_Dem["Comprobar:<br/>demostrado(martinez, robo...)"]
+        B2_Dem -->|"ÉXITO (Exit)"| B2_Del["Comprobar hecho:<br/>delito(robo_a_mano_armada)"]
+        B2_Del -->|"ÉXITO (Exit)"| S1["<b>Veredicto 1 (Culpable):</b><br/>{X = martinez, Y = robo_a_mano_armada}"]
+        S1 ==>|"Retroceso (Backtracking)"| ChoiceIntento
+
+        %% Alternativa 3: Rodriguez
+        ChoiceIntento -->|"(3) X = rodriguez<br/>Y = asesinato"| B3["Metas restantes:<br/>?- demostrado(rodriguez, asesinato),<br/>delito(asesinato)."]
+        B3 --> B3_Dem["Comprobar:<br/>demostrado(rodriguez, asesinato)"]
+        B3_Dem -->|"ÉXITO (Exit)"| B3_Del["Comprobar hecho:<br/>delito(asesinato)"]
+        B3_Del -->|"ÉXITO (Exit)"| S2["<b>Veredicto 2 (Culpable):</b><br/>{X = rodriguez, Y = asesinato}"]
+        S2 ==>|"Retroceso (Backtracking)"| ChoiceIntento
+
+        %% Alternativa 4: Sanchez
+        ChoiceIntento -->|"(4) X = sanchez<br/>Y = incendio_premeditado"| B4["Metas restantes:<br/>?- demostrado(sanchez, incendio_premeditado),<br/>delito(incendio_premeditado)."]
+        B4 --> B4_Dem["Comprobar:<br/>demostrado(sanchez, incendio...)"]
+        B4_Dem -->|"ÉXITO (Exit)"| B4_Del["Comprobar hecho:<br/>delito(incendio_premeditado)"]
+        B4_Del -->|"ÉXITO (Exit)"| S3["<b>Veredicto 3 (Culpable):</b><br/>{X = sanchez, Y = incendio_premeditado}"]
+        S3 ==>|"Búsqueda Concluida"| Fin["<b>Espacio de Búsqueda Agotado:</b><br/>3 culpables demostrados exhaustivamente."]
+
+    end
+
+    style Baseline_Culpable_AB fill:none
+
+    classDef rootNode fill:none,stroke:#283593,stroke-width:2.5px;
+    classDef ruleNode fill:none,stroke:#5E35B1,stroke-width:2px;
+    classDef choiceNode fill:none,stroke:#EF6C00,stroke-width:2px;
+    classDef branch fill:none,stroke:#37474F,stroke-width:2px;
+    classDef successNode fill:none,stroke:#00796B,stroke-width:2.5px;
+    classDef failNode fill:none,stroke:#C62828,stroke-width:2px;
+
+    class Root rootNode;
+    class R_Culpable,R_Condenado ruleNode;
+    class ChoiceIntento,B1_Dem,B2_Dem,B2_Del,B3_Dem,B3_Del,B4_Dem,B4_Del choiceNode;
+    class B1,B2,B3,B4 branch;
+    class B1_Fail failNode;
+    class S1,S2,S3,Fin successNode;

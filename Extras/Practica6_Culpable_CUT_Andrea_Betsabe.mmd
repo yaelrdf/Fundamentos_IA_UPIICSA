@@ -1,0 +1,54 @@
+flowchart TD
+    subgraph Cut_Culpable_AB ["Árbol de Resolución SLD con Poda - culpable(X, Y) [Operador CUT (!)]"]
+        direction TB
+
+        %% Meta Inicial
+        Root["<b>Objetivo de Consulta:</b><br/>?- culpable(Individuo, Delito)."]
+        Root --> R_Culpable["<b>Invocación Regla culpable/2:</b><br/>?- condenado(X, Y), delito(Y)."]
+        
+        R_Culpable --> R_Condenado["<b>Invocación Regla condenado/2:</b><br/>?- intento(X, Y), demostrado(X, Y), !, delito(Y)."]
+        
+        R_Condenado --> ChoiceIntento["<b>Punto de Selección de Hechos:</b><br/>Evaluar cláusulas de: intento(X, Y)"]
+
+        %% Alternativa 1: Calteron
+        ChoiceIntento -->|"(1) calteron"| B1["Intento: calteron<br/>?- demostrado(calteron, traicion_a_la_patria),<br/>!, delito(traicion_a_la_patria)."]
+        B1 --> B1_Dem["¿demostrado(calteron, ...)?"]
+        B1_Dem -->|"No existe hecho en BD"| B1_Fail["❌ Fracaso de Demostración"]
+        B1_Fail ==>|"Retroceso hacia intento/2"| ChoiceIntento
+
+        %% Alternativa 2: Martinez
+        ChoiceIntento -->|"(2) martinez"| B2["Intento: martinez<br/>?- demostrado(martinez, robo_a_mano_armada),<br/>!, delito(robo_a_mano_armada)."]
+        B2 --> B2_Dem["¿demostrado(martinez, ...)?"]
+        B2_Dem -->|"Hecho comprobado en BD"| B2_Cut["<b>DISPARO DEL OPERADOR CUT (!)</b><br/>Congela variables: X = martinez, Y = robo_a_mano_armada<br/>Submeta restante: ?- delito(robo_a_mano_armada)."]
+        
+        B2_Cut --> B2_Del["Comprobar: delito(robo_a_mano_armada)"]
+        B2_Del -->|"Hecho verificado"| S1["<b>Única Solución Permitida:</b><br/>{X = martinez, Y = robo_a_mano_armada}"]
+        
+        %% PODA DE RAMAS (Efecto del Cut)
+        ChoiceIntento -.->|"PODA (CUT)"| B3["✂ Rama Podada:<br/>Se anula alternativa: X = rodriguez (asesinato)"]
+        ChoiceIntento -.->|"PODA (CUT)"| B4["✂ Rama Podada:<br/>Se anula alternativa: X = sanchez (incendio)"]
+        
+        S1 ==>|"Intento de Backtracking"| BacktrackFail["<b>PODA Y CIERRE DE BÚSQUEDA</b><br/>El corte '!' destruye los puntos de elección previos en intento/2 y condenado/2.<br/>Se suprime todo retroceso hacia alternativas restantes."]
+    end
+
+    style Cut_Culpable_AB fill:none
+
+    classDef rootNode fill:none,stroke:#303F9F,stroke-width:2.5px;
+    classDef ruleNode fill:none,stroke:#7B1FA2,stroke-width:2px;
+    classDef choiceNode fill:none,stroke:#E64A19,stroke-width:2px;
+    classDef branch fill:none,stroke:#455A64,stroke-width:2px;
+    classDef cutNode fill:none,stroke:#C2185B,stroke-width:2.5px;
+    classDef successNode fill:none,stroke:#00796B,stroke-width:2.5px;
+    classDef pruneNode fill:none,stroke:#C62828,stroke-width:2px,stroke-dasharray: 4 4,color:#B71C1C;
+    classDef failNode fill:none,stroke:#B71C1C,stroke-width:2px;
+    classDef blockNode fill:none,stroke:#880E4F,stroke-width:2.5px;
+
+    class Root rootNode;
+    class R_Culpable,R_Condenado ruleNode;
+    class ChoiceIntento,B1_Dem,B2_Dem,B2_Del choiceNode;
+    class B1,B2 branch;
+    class B1_Fail failNode;
+    class B2_Cut cutNode;
+    class S1 successNode;
+    class B3,B4 pruneNode;
+    class BacktrackFail blockNode;
