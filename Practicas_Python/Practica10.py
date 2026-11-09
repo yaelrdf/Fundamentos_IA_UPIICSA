@@ -1,6 +1,4 @@
-# ---------------------------------------------------------------------------
 # Importar las bibliotecas necesarias
-# ---------------------------------------------------------------------------
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
@@ -85,6 +83,6 @@ print(f"Precisión con 4 decimales: {precision:.4f} "
       f"({int((y_test == y_pred).sum())} de {len(y_test)} aciertos)")
 print()
 
-# Mostrar un informe de clasificación con métricas detalladas
+#Mostrar un informe de clasificación con métricas detalladas
 print("Informe de clasificación")
 print(classification_report(y_test, y_pred))
